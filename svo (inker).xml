@@ -255,13 +255,29 @@ svo.loader.inker = function()
   
   -- if ends with 'on person' or 'of person', then it's on a person!
   function svo.ti_ink(order)
-    local anotherperson = order:match(" on (%w+)$")
-    if anotherperson then order = order:sub(1, #order-#anotherperson-4) end
+    local anotherperson = order:match(" on (%w+)$") or order:match(" of (%w+)$")
+    local bodypart = order:match(" on (.+) of ")
+    if bodypart then
+      order = order:sub(1, #order - #bodypart - #anotherperson - 8)
+    elseif anotherperson then
+      order = order:sub(1, #order - #anotherperson - 4)
+    end
     local tattoosorder = string.split(order, ",")
     for i = 1, #tattoosorder do tattoosorder[i] = string.trim(tattoosorder[i]) end
   
-    svo.ti_inking = {on = anotherperson or 'me', tattoos = tattoosorder, tattoo_counter = 1}
-    svo.echof("Going to ink %s on %s.", svo.concatand(svo.ti_inking.tattoos), svo.ti_inking.on)
+    svo.ti_inking =
+    {
+      on = anotherperson or 'me',
+      tattoos = tattoosorder,
+      part = bodypart or 'open part',
+      tattoo_counter = 1,
+    }
+    svo.echof(
+    "Going to ink %s on %s of %s.",
+    svo.concatand(svo.ti_inking.tattoos),
+    svo.ti_inking.part,
+    svo.ti_inking.on
+    )
     svo.showprompt() echo"\n"
     svo.app('on')
     
@@ -331,7 +347,11 @@ svo.loader.inker = function()
       end
     end
     if not stencil then
-      svo.sendc(string.format("ink %s on %s", svo.ti_inking.tattoos[svo.ti_inking.tattoo_counter], svo.ti_inking.on))
+      if svo.ti_inking.part == "open part" then
+        svo.sendc(string.format("ink %s on %s", svo.ti_inking.tattoos[svo.ti_inking.tattoo_counter], svo.ti_inking.on))
+      else
+        svo.sendc(string.format("ink %s on %s of %s", svo.ti_inking.tattoos[svo.ti_inking.tattoo_counter], svo.ti_inking.on, svo.ti_inking.part))
+      end
     else
       svo.sendc(string.format("queue add eqbal ink %s on %s", svo.ti_inking.tattoos[svo.ti_inking.tattoo_counter], svo.ti_inking.on))
     end
