@@ -359,6 +359,11 @@ svo.loader.inker = function()
   
   function svo.ti_interrupted()
     if not svo.ti_inking then return end
+    if not svo.conf.autoreink then 
+      echo"\n" svo.echofn("Not reinking interrupted tattoos...")
+      fg('green') echoLink(" (ENABLE) ", "svo.config.set('autoreink', true, true)", "Click to start auto reinking interrupted tattoos", true)
+      svo.ti_cancelinking() 
+    end
     if svo.ti_inking.on == 'me' then
       echo"\n" svo.echofn("Be still! Going to ink again in a few... ")
       cechoLink("&lt;red&gt;(CANCEL)","svo.ti_cancelinking()","Cancel inking",true)
@@ -402,6 +407,28 @@ svo.loader.inker = function()
       svo.echof("&lt;0,250,0&gt;Will%s tell people to touch tattoos they need to after inking.", svo.getDefaultColor())
     end,
     ondisabled = function () svo.echof("&lt;250,0,0&gt;Won't%s tell people to touch tattoos they need to after inking.", svo.getDefaultColor()) end
+  })
+  
+  svo.config.setoption('autoreink',
+  {
+    type = 'boolean',
+    vconfig2string = true,
+    onshow = function (defaultcolour)
+      fg('gold')
+      echoLink("ti:", "", "svo Tattoo Inker", true)
+      -- &lt;Reink/Don't reink&gt; interrupted tattoos
+      if svo.conf.autoreink then
+        fg('a_cyan') echoLink(" Will", "svo.config.set('autoreink', false, true)", "Click to stop auto reinking interrupted tattoos", true)
+      else
+        fg('a_cyan') echoLink(" Won't", "svo.config.set('autoreink', true, true)", "Click to start auto reinking interrupted tattoos", true)
+      end
+      fg(defaultcolour) echo(" reink interrupted tattoos")
+      echo(".\n")
+    end,
+    onenabled = function ()
+      svo.echof("&lt;0,250,0&gt;Will%s reink interrupted tattoos.", svo.getDefaultColor())
+    end,
+    ondisabled = function () svo.echof("&lt;250,0,0&gt;Won't%s reink interrupted tattoos.", svo.getDefaultColor()) end
   })
   svo.inkerLoaded = true 
   if firstload then
