@@ -14491,7 +14491,9 @@ if svo.haveskillset('skirmishing') then
   basicdef('scout', 'scout', nil, 'scouting')
 end
 if svo.haveskillset('weaponmastery') then
-  basicdef('deflect', 'deflect', true)
+  if stats.spec == 'Two Handed' then
+    basicdef('deflect', 'deflect', true)
+  end
   basicdef('mastery', "mastery on", true, 'blademastery')
 end
 if svo.haveskillset('subterfuge') then
