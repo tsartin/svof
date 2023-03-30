@@ -388,21 +388,39 @@ do
 end
 
 -- Class resources: Some classes have resources that it is good to keep track. Put them here!
-if svo.haveskillset('groves') then
-signals.gmcpcharvitals:connect(function()
-  if gmcp.Char.Vitals.charstats then
-    for _, val in ipairs(gmcp.Char.Vitals.charstats) do
-      local sunlight = val:match("^Sunlight: (%d+)$")
-      if sunlight then
-        stats.sunlight = tonumber(sunlight)
-        break
+
+if svo.haveskillset('swashbuckling') then
+  signals.gmcpcharvitals:connect(function()
+    if gmcp.Char.Vitals.charstats then
+      for _, val in ipairs(gmcp.Char.Vitals.charstats) do
+        local stance = val:match("^Stance: (%w+)$")
+        if stance then
+          svo.classinfo.stance = stance
+          break
+        end
       end
     end
-  end
-  if not stats.sunlight then
-    stats.sunlight = 0
-  end
-end, 'update sunlight')
+    if not svo.classinfo.stance then
+      svo.classinfo.stance = "None"
+    end
+  end, 'update stance')
+end
+
+if svo.haveskillset('groves') then
+  signals.gmcpcharvitals:connect(function()
+    if gmcp.Char.Vitals.charstats then
+      for _, val in ipairs(gmcp.Char.Vitals.charstats) do
+        local sunlight = val:match("^Sunlight: (%d+)$")
+        if sunlight then
+          stats.sunlight = tonumber(sunlight)
+          break
+        end
+      end
+    end
+    if not stats.sunlight then
+      stats.sunlight = 0
+    end
+  end, 'update sunlight')
 end
 if svo.haveskillset('metamorphosis') then
 signals.gmcpcharvitals:connect(function()
@@ -583,7 +601,28 @@ end
 --[[
 new model for tertiary balances that don't need to rely on dozens of attack triggers and timers. 
 If this works properly and don't error anything out down the road we can extend it to the other balances as well :)
-]] 
+]]
+
+if svo.haveskillset('voicecraft') then
+  signals.gmcpcharvitals:connect(function()
+    if gmcp.Char.Vitals.charstats then
+      for _, val in ipairs(gmcp.Char.Vitals.charstats) do
+        local voice = val:match("^Voice: (%w+)$")
+        if voice and voice == "Yes" then
+          svo.bals.voice = true
+        elseif voice and voice == "No" then
+          svo.bals.voice = false
+          break
+        end
+      end
+    end
+    if not svo.bals.voice then
+      svo.bals.voice = true
+    end
+  end, 'update voice balance')
+end
+
+
 if svo.haveskillset('anathema') then
 signals.gmcpcharvitals:connect(function()
   if gmcp.Char.Vitals.charstats then
