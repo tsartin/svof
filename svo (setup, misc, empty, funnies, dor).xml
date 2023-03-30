@@ -387,7 +387,7 @@ do
   end
 end
 
--- Class resources: Some classes have resources that it is good to keep track. Put them her
+-- Class resources: Some classes have resources that it is good to keep track. Put them here!
 if svo.haveskillset('groves') then
 signals.gmcpcharvitals:connect(function()
   if gmcp.Char.Vitals.charstats then
@@ -463,18 +463,19 @@ end
 
 if svo.haveskillset('kaido') then
   signals.gmcpcharvitals:connect(function()
-  if gmcp.Char.Vitals.charstats then
-    for _, val in ipairs(gmcp.Char.Vitals.charstats) do
-      local kai = val:match("^Kai: (%d+)%$")
-      if kai then
-        stats.kai = tonumber(kai)
-        break
+    if gmcp.Char.Vitals.charstats then
+      for _, val in ipairs(gmcp.Char.Vitals.charstats) do
+        local kai = val:match("^Kai: (%d+)%$")
+        if kai then
+          stats.kai = tonumber(kai)
+          break
+        end
       end
     end
-  end
-  if not stats.kai then
-    stats.kai = 0
-  end
+    if not stats.kai then
+      stats.kai = 0
+    end
+  end, 'update kai')
 end
 
 if svo.haveskillset('necromancy') or svo.haveskillset('oppression') then
