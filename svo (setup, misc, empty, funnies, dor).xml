@@ -389,21 +389,39 @@ end
 
 -- Class resources: Some classes have resources that it is good to keep track. Put them here!
 
+if svo.haveskillset('aeonics') then
+  signals.gmcpcharvitals:connect(function()
+    if gmcp.Char.Vitals.charstats then
+      for _, val in ipairs(gmcp.Char.Vitals.charstats) do
+        local age = val:match("^Age: (%d+)$")
+        if age then
+          stats.age = tonumber(age)
+          break
+        end
+      end
+    end
+    if not stats.age then
+      stats.age = 0
+    end
+  end, 'update age')
+end
+
 if svo.haveskillset('swashbuckling') then
   signals.gmcpcharvitals:connect(function()
     if gmcp.Char.Vitals.charstats then
       for _, val in ipairs(gmcp.Char.Vitals.charstats) do
         local stance = val:match("^Stance: (%w+)$")
         if stance then
-          svo.classinfo.stance = stance
+          --using svo.me based on how monk handles stance. Might need to be changed.
+          me.stance = stance:lower()
           break
         end
       end
     end
     if not svo.classinfo.stance then
-      svo.classinfo.stance = "None"
+      me.stance = "None"
     end
-  end, 'update stance')
+  end, 'update swashbuckling stance')
 end
 
 if svo.haveskillset('groves') then
@@ -422,6 +440,7 @@ if svo.haveskillset('groves') then
     end
   end, 'update sunlight')
 end
+
 if svo.haveskillset('metamorphosis') then
 signals.gmcpcharvitals:connect(function()
   if gmcp.Char.Vitals.charstats then
@@ -602,17 +621,42 @@ end
 new model for tertiary balances that don't need to rely on dozens of attack triggers and timers. 
 If this works properly and don't error anything out down the road we can extend it to the other balances as well :)
 ]]
+if svo.haveskillset('terminus') then
+  signals.gmcpcharvitals:connect(function()
+    if gmcp.Char.Vitals.charstats then
+      for _, val in ipairs(gmcp.Char.Vitals.charstats) do
+        local word = val:match("^Word: (%w+)$")
+        if word then
+          if svo.bals.word ~= nil and (svo.bals.word == false and word == "Yes") then       
+            svo.valid.gotwordbalance()
+          break
+          elseif svo.bals.word ~= nil and (svo.bals.word == true and word == "No") then
+            svo.valid.usedwordbalance()
+          break
+          end
+        end
+      end
+    end
+    if not svo.bals.word then
+      svo.bals.word = true
+    end
+  end, 'update word balance')
+end
+
 
 if svo.haveskillset('voicecraft') then
   signals.gmcpcharvitals:connect(function()
     if gmcp.Char.Vitals.charstats then
       for _, val in ipairs(gmcp.Char.Vitals.charstats) do
         local voice = val:match("^Voice: (%w+)$")
-        if voice and voice == "Yes" then
-          svo.bals.voice = true
-        elseif voice and voice == "No" then
-          svo.bals.voice = false
+        if voice then
+          if svo.bals.voice ~= nil and (svo.bals.voice == false and voice == "Yes") then       
+            svo.valid.gotvoicebalance()
           break
+          elseif svo.bals.voice ~= nil and (svo.bals.voice == true and voice == "No") then
+            svo.valid.usedvoicebalance()
+          break
+          end
         end
       end
     end
@@ -1360,18 +1404,6 @@ if not svo.haveskillset('physiology') then
 disableTrigger("Humour balance")
 else
 enableTrigger("Humour balance")
-end
-
-if svo.haveskillset('terminus') then
-enableTrigger("Word balance")
-else
-disableTrigger("Word balance")
-end
-
-if svo.haveskillset('aeonics') then
-enableTrigger("Age tracking")
-else
-disableTrigger("Age tracking")
 end
 
 -- local oldsend

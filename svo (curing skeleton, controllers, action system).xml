@@ -2682,10 +2682,6 @@ if svo.haveskillset('shindo') then
   stats.shin = line:match("%-(%d+)%-") or line:match("%-(%d+) Vote%-") or 0
 end
 
-if svo.haveskillset('kaido') then
-  stats.kai = line:match("%-(%d+)%-") or line:match("%-(%d+) Vote%-") or 0
-end
-
 if svo.haveskillset('necromancy') then
   if pflags.at then defences.got('blackwind') else defences.lost('blackwind') end
 end
